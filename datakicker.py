@@ -35,12 +35,14 @@ def createDWChart(title="Test"):
 def updatemetadata(id, filename):
     url = f'https://api.datawrapper.de/v3/charts/{id}'
     headers = {
-        'authorization': f'Bearer {dwToken}'
+        'authorization': f'Bearer {dwToken}',
+        'accept': "*/*",
+        'content-type': "application/json"
     }
     with open(f'{filename}', 'r') as json_file:
         payload = json.load(json_file)
     #payload = json.loads(payload)
-    description = ((requests.patch(url=url, headers=headers, json=payload)))
+    description = (requests.patch(url=url, headers=headers, json=payload))
     url = f'https://api.datawrapper.de/charts/{id}/publish'
     payload = ({'json': True})
     publish = (requests.post(url=url, headers=headers, json=payload))
@@ -69,6 +71,9 @@ def updatedwchart(id, data, title, updatedate='-upsi, schick Jonathan eine Mail-
             'annotate': {
                 'notes': f'{message}'
             }
+        },
+        'visualize': {
+            'custom-range-y': [0,''],
         },
         'folderId': f'{folder}'
     }

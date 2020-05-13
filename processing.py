@@ -9,8 +9,10 @@ import numpy as np
 def rollingavgWD(data):
     for site in data['SiteCode'].unique():
         thisdata = data.loc[data['SiteCode'] == site].copy()
+        thisdata['Month'] = thisdata['Month'].astype(int)
+        thisdata['Day']= thisdata['Day'].astype(int)
         thisdata['Month'] = thisdata['Month'].apply(lambda x:'{0:0>2}'.format(x))
-        thisdata['Day'] = thisdata['Day'].apply(lambda x:'{0:0>2}'.format(x))
+        thisdata['Day'] = thisdata['Day'].astype(int).apply(lambda x:'{0:0>2}'.format(x))
         thisdata = thisdata.sort_values(by=['Year', 'Month', 'Day']).reset_index(drop=True)
         thisdata = thisdata.loc[thisdata['Weekday'] < 5]
         thisdata['rollingavg'] = thisdata['Total'].rolling(3).mean()
@@ -62,7 +64,9 @@ def uploadaverages(site, thisdata, newdata, filestring, namestring, folder, char
             jsondata = dk.updatedwchart(id, newdata, title=namestring, updatedate=updatedate, folder=folder)
             thischart['title'] = namestring
             thischart['embedcode']= jsondata['metadata']['publish']['embed-codes']['embed-method-responsive']
-            thischart['public_link']= jsondata['url']
+            thischart['url']= jsondata['url']
+            if updatedate[:7]!='2020-05':
+                thischart['ignore']=1
             dk.updatemetadata(id, filename)
             charts.loc[charts['SiteCode'] == site] = thischart
             print(thischart['title'].iloc[0] + ' update erfolgreich')
@@ -78,6 +82,7 @@ def uploadaverages(site, thisdata, newdata, filestring, namestring, folder, char
             dk.updatedwchart(id, newdata, title=namestring, updatedate=updatedate, folder=folder)
             print(title + ' update erfolgreich')
             charts.to_csv(f'{chartadminfn}', index=False)
+        newdata.to_csv(f'data/stations/corona_{filestring}.csv')
     else:
         sys.exit('No chartadmin file found - check if rolling_chartadmin.csv exists')
 
@@ -119,8 +124,9 @@ def test_monthly():
     monthlyaverages(data)
 
 def test_rolling_avg():
-    data = pd.read_csv('data/dailytotals.csv')
+    data = pd.read_csv('data/dailiesnew.csv')
     rollingavgWD(data)
+    print('Abgeschlossen')
 
-test_rolling_avg()
+#test_rolling_avg()
 #test_monthly()

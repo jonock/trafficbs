@@ -8,7 +8,6 @@ def loaddata():
         {
             'Total':sum,
             'SiteName':'first',
-            'Date':'first',
             'ValuesApproved':'last',
             'TrafficType':'first',
             'Year':'first',
@@ -22,7 +21,6 @@ def loaddata():
         {
             'Total': sum,
             'SiteName': 'first',
-            'Date': 'first',
             'ValuesApproved': 'last',
             'TrafficType': 'first',
             'Year': 'first',
@@ -47,7 +45,6 @@ def monthlyaverages(data):
         {
             'Total':'mean',
             'SiteName': 'first',
-            'Date': 'first',
             'ValuesApproved': 'last',
             'TrafficType': 'first',
             'Year': 'first',
