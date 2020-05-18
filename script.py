@@ -1,52 +1,65 @@
-import pandas as pd
 import csv
 import json
 from datetime import datetime
+
+import pandas as pd
 import requests
+
 import processing as pc
 
 now = datetime.now()
 
+
 def dailyupdate():
-    #import existing dataset
+    # import existing dataset
     legacy = pd.read_csv('data/dailytotals.csv')
     legacy = legacy.loc[legacy['Year'] > 2017]
     legacydate = []
     for date in legacy.iterrows():
-        legacydate.append(datetime.strptime(date[1]['Date'],'%d.%m.%Y'))
+        legacydate.append(datetime.strptime(date[1]['Date'], '%d.%m.%Y'))
     maxtime = max(legacydate)
-    datecode = datetime.strftime(maxtime, '%Y-%m-%dT%h%m') + '+00.00'
+    datecode = datetime.strftime(maxtime, '%Y-%m-%dT%h%m')
     print(datecode)
-    #2020-05-07T23%3A00%3A00%2B00.00
+    # 2020-05-07T23%3A00%3A00%2B00.00
     data = gatherBS(100013)
     dataagg = pd.DataFrame()
     for entry in data:
         dataagg = dataagg.append(entry['fields'], ignore_index=True)
-    dataagg.to_csv('poll_' + datetime.strftime(datetime.now(), '%y%m%d'))
+    dataagg.sort_values(by=['year', 'month', 'day'])
+    dataagg.to_csv('data/poll_' + datetime.strftime(datetime.now(), '%y%m%d.csv'))
     dataagg = dataagg.loc[dataagg['datetimefrom'] >= datecode]
     datasums = sumdata(dataagg)
     aggregate = pd.concat([legacy, datasums], ignore_index=True)
-    aggregate.drop_duplicates()
+    aggregate.drop_duplicates(subset=['SiteCode', 'Date', 'Total', 'TrafficType'])
     aggregate.to_csv('data/dailiesnew.csv')
-    print('csv gespeichert ab ' + str(datecode[:10]) + 'neue Einträge' +  str(len(datasums)))
+    print('csv gespeichert ab ' + str(datecode[:10]) + ' neue Einträge ' + str(len(datasums)))
     return dataagg
 
 def sumdata(data):
     groups = pd.DataFrame()
     groups = data.groupby(['sitecode', 'date']).agg(
         {
-            'total':sum,
-            'sitename':'first',
-            'valuesapproved':'last',
-            'traffictype':'first',
-            'year':'first',
-            'month':'first',
-            'day':'first',
-            'weekday':'first'
+            'total': sum,
+            'sitename': 'first',
+            'valuesapproved': 'last',
+            'traffictype': 'first',
+            'year': 'first',
+            'month': 'first',
+            'day': 'first',
+            'weekday': 'first',
+            'geo_point_2d': 'last'
         })
     groups = groups.reset_index(drop=False)
-    groups.rename(columns={'total':'Total', 'sitecode':'SiteCode','sitename':'SiteName', 'date':'Date', 'valuesapproved':'ValuesApproved','traffictype':'TrafficType', 'year':'Year', 'month':'Month', 'day':'Day', 'weekday':'Weekday'}, inplace=True)
-    groups = groups[['SiteCode', 'Date', 'Total', 'SiteName', 'ValuesApproved', 'TrafficType', 'Year', 'Month', 'Day', 'Weekday']]
+    groups['Geo Point'] = ' '
+    groups['Geo Point'] = [','.join(map(str, l)) for l in groups['geo_point_2d']]
+    # groups['Geo Point'].join(groups['geo_point_2d'])
+    groups.drop('geo_point_2d', axis=1)
+    groups.rename(columns={'total': 'Total', 'sitecode': 'SiteCode', 'sitename': 'SiteName', 'date': 'Date',
+                           'valuesapproved': 'ValuesApproved', 'traffictype': 'TrafficType', 'year': 'Year',
+                           'month': 'Month', 'day': 'Day', 'weekday': 'Weekday'}, inplace=True)
+    groups = groups[
+        ['SiteCode', 'Date', 'Total', 'SiteName', 'ValuesApproved', 'TrafficType', 'Year', 'Month', 'Day', 'Weekday',
+         'Geo Point']]
     return groups
 
 

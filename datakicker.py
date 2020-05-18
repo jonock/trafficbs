@@ -1,6 +1,7 @@
-import pandas as pd
-import requests
 import json
+
+import requests
+
 from credentials import dwToken
 
 
@@ -72,9 +73,7 @@ def updatedwchart(id, data, title, updatedate='-upsi, schick Jonathan eine Mail-
                 'notes': f'{message}'
             }
         },
-        'visualize': {
-            'custom-range-y': [0,''],
-        },
+
         'folderId': f'{folder}'
     }
     #    payload = json.dumps(payload)
@@ -85,22 +84,15 @@ def updatedwchart(id, data, title, updatedate='-upsi, schick Jonathan eine Mail-
     print(publish.json())
     return description.json()
 
-def addDWData(id, dataimp):
+
+def updateMarkers(id, data):
     headers = {
         'authorization': f'Bearer {dwToken}',
-        'content-type': 'text/csv'
     }
-    print(dataimp)
-    data = dataimp.to_csv(f'data/dwcharts/{id}_data.csv', index=True, encoding='utf-8')
     print(repr(data))
     url = f'https://api.datawrapper.de/v3/charts/{id}/data'
-
-    #    respo = requests.put(url, headers=headers, data=data)
-    #    webbrowser.open(f'https://datawrapper.de/chart/{id}/upload')
-    headers = {
-        'authorization': f'Bearer {dwToken}'
-    }
-    print((requests.put(url=f'https://api.datawrapper.de/v3/charts/{id}/data', headers=headers, body=data).json()))
+    respo = requests.put(url, headers=headers, data=json.dumps(data))
+    print(respo)
 
 
 def getChartMetadata(id):
@@ -124,3 +116,13 @@ def metaDatatemp(id):
     metadata, metadataJson = getChartMetadata(id)
     with open('metaconfigs/temp.json', 'w') as writefile:
         json.dump(metadata, writefile)
+
+
+def getChartData(id):
+    headers = {
+        'authorization': f'Bearer {dwToken}'
+    }
+    metadataJson = requests.get(url=f'https://api.datawrapper.de/v3/charts/{id}/data', headers=headers)
+    metadataDict = metadataJson.json()
+    return (metadataDict)
+    print('Metadaten erhalten')
