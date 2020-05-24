@@ -16,3 +16,7 @@ Analyzing traffic in Basel based on public data and plotting it with Datawrapper
 - Datawrapper token is stored in the 'credentials.py' file
 - New charts can be created by the script and added to a 'chardadmin' file which is used to keep an overview of all the charts
 - 'script.py' serves as a daily script that can be run with a cronjob
+
+
+The result is published here:
+[rideable.ch](https://rideable.ch/corona-so-bewegt-sich-basel/) 
