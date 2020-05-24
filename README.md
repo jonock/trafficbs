@@ -1,6 +1,7 @@
 # trafficbs
 Analyzing traffic in Basel based on public data and plotting it with Datawrapper
 
+![Image of charts](https://rideable.ch/content/images/size/w2000/2020/05/1-2.png)
 
 ## Data Gathering
 - CSV data was downloaded from the open data portal of the canton Basel-Stadt
