@@ -12,7 +12,7 @@ now = datetime.now()
 
 def dailyupdate():
     # import existing dataset
-    legacy = pd.read_csv('data/dailytotals.csv')
+    legacy = pd.read_csv('data/dailiesnew.csv')
     legacy = legacy.loc[legacy['Year'] > 2017]
     legacydate = []
     for date in legacy.iterrows():
