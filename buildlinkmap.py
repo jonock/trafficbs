@@ -5,9 +5,10 @@ import datakicker as dk
 # import LatLon
 
 data = dk.getChartData('ZOd9a')
+data2 = dk.getChartData('BBxPZ')
 
 
-def addMarkers(data, filename):
+def addMarkers(data, filename, dwid='ZOd9a'):
     print(data)
     admin = pd.read_csv(filename)
     markers = []
@@ -27,10 +28,15 @@ def addMarkers(data, filename):
         foot = {'id': 'school',
                 'path': 'M638 800c-49 0-88-39-88-87s39-88 88-88 87 39 87 88-39 87-87 87z m-400-100c-49 0-88-39-88-87s39-88 88-88 87 39 87 88-39 87-87 87z m462-100c-19 0-49-7-75-25l-162-116c-45-31-4-86 37-59l106 70s70-150 44-220c-1-2-2-4-2-6l-109-291c-12-33 12-53 36-53 16 0 31 10 39 28l136 322s25-150 125-150c60 0 104 0 138 0 37 0 37 38 37 38s0 37-37 37c-25 0-88 0-113 0-53 0-50 80-50 125 0 75-50 200-50 200l150-100c45-30 85 23 41 56l-166 119c-30 22-40 25-75 25 0 0-25 0-50 0z m-525-100c-25 0-37-12-50-25l-106-106c-14-14-19-26-19-44 0-25 38-37 59-16l91 91c50 0 69-125 50-175l-75-200c-21-55 57-72 75-25l75 200s25-50 75-50l150 0c50 0 50 75 0 75l-125 0c-25 0-25 50-25 75 0 100-50 200-100 200z',
                 'horiz-adv-x': 1050}
+        car = {'id': 'taxi-2',
+               'path': 'M268 243q0 37-26 63t-63 26-63-26-27-63 27-63 63-26 63 26 26 63z m20 178h567l-50 200q-1 4-8 9t-11 6h-429q-5 0-12-6t-7-9z m766-178q0 37-27 63t-63 26-63-26-26-63 26-63 63-26 63 26 27 63z m89 53v-214q0-8-5-13t-13-5h-54v-71q0-45-31-76t-76-31-76 31-31 76v71h-571v-71q0-45-31-76t-76-31-76 31-32 76v71h-53q-8 0-13 5t-5 13v214q0 52 37 89t88 36h16l58 234q13 53 58 88t100 36h429q54 0 100-36t58-88l58-234h16q52 0 88-36t37-89z',
+               'horiz-adv-x': 1142.9, 'height': 665, 'width': 1143}
         if site[1]['title'][7:11] == 'Velo':
             icon = bike
-        else:
+        elif site[1]['title'][7:11] == 'Fussgänger':
             icon = foot
+        else:
+            icon = car
         title = site[1]['stationstring']
         link = site[1]['url']
         if site[1]['ignore'] != 1:
@@ -41,7 +47,9 @@ def addMarkers(data, filename):
             markers.append(thismarker)
             print(thismarker)
     data['markers'] = markers
-    dk.updateMarkers('ZOd9a', data)
+    dk.updateMarkers(dwid, data)
 
 
 addMarkers(data, 'rollingavg_3m_chartadmin.csv')
+addMarkers(data2, 'MIV_rollingavg_3m_chartadmin.csv', dwid='BBxPZ')
+print('Linkmap gebaut')
