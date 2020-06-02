@@ -109,7 +109,7 @@ def rollingavgWD(data, chartadminfn='rollingavg_3m_chartadmin.csv', folder=31911
         if thisdata['TrafficType'].iloc[0] == 'Velo':
             namestring = 'Anzahl ' + thisdata['TrafficType'].iloc[0] + 's bei ' + thisdata['SiteName'].iloc[0][4:]
         elif thisdata['TrafficType'].iloc[0] == 'MIV':
-            namestring = 'Anzahl Autos, Töffli und Lastwagen bei ' + thisdata['SiteName'].iloc[0][4:]
+            namestring = 'MIV Verkehr bei ' + thisdata['SiteName'].iloc[0][4:]
         else:
             namestring = 'Anzahl ' + thisdata['TrafficType'].iloc[0] + ' bei ' + thisdata['SiteName'].iloc[0][4:]
 
@@ -311,6 +311,7 @@ def test_weekly_comparisons():
     calendarweeks(bpdata, mivdata, ptdata)
 
 
+test_rolling_avg()
 test_weekly_comparisons()
 # test_rolling_avg()
 # test_monthly()

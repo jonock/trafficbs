@@ -33,7 +33,7 @@ def addMarkers(data, filename, dwid='ZOd9a'):
                'horiz-adv-x': 1142.9, 'height': 665, 'width': 1143}
         if site[1]['title'][7:11] == 'Velo':
             icon = bike
-        elif site[1]['title'][7:11] == 'Fussgänger':
+        elif site[1]['title'][7:11] == 'Fuss':
             icon = foot
         else:
             icon = car
