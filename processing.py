@@ -136,19 +136,25 @@ def calendarweeks(bpdata, mivdata, ptdata):
     weekly_bp = bpdata.groupby(['TrafficType', 'Year', 'iso_week_number']).agg(
         {
             'Total': 'sum',
+            'SiteCode': 'count',
             'Month': 'first',
             'Day': 'first'
         }
     )
+    # rename number of observations
+    weekly_bp = weekly_bp.rename(columns={'SiteCode': 'n_observations'})
+    # same for miv data
     weekly_miv = pd.DataFrame(columns=['TrafficType', 'iso_week_number', 'Year', 'Month', 'Day', 'Total'])
     weekly_miv = mivdata.groupby(['TrafficType', 'Year', 'iso_week_number']).agg(
         {
             'Total': 'sum',
+            'SiteCode': 'count',
             'Month': 'first',
             'Day': 'first'
         }
     )
-
+    # rename number of observations
+    weekly_miv = weekly_miv.rename(columns={'SiteCode': 'n_observations'})
     # Adjust Public Transport Data
     ptdata = ptdata.sort_values(by='Kalenderwoche')
 
@@ -160,10 +166,17 @@ def calendarweeks(bpdata, mivdata, ptdata):
 
     ptdata['Day'] = ptdata.apply(
         lambda x: int(str(x['Startdatum Woche'])[8:10]), axis=1)
+    # check for incomplete weeks before merging
 
+    incomplete = []
+    # incomplete = incomplete.append(weekly_bp.loc[weekly_bp['n_observations']<100])
+    weekly_bp = weekly_bp.loc[weekly_bp['n_observations'] >= 100]
+    weekly_miv = weekly_miv.loc[weekly_miv['n_observations'] >= 180]
+
+    # relabel tables for DataWrapper upload
     ptdata = ptdata.drop(columns='Startdatum Woche')
     ptdata = ptdata.rename(columns={'Kalenderwoche': 'iso_week_number', 'Fahrgäste (Einsteiger)': 'Total'})
-    ptdata['TrafficType'] = 'Tram'
+    ptdata['TrafficType'] = 'BVB'
     ptdata = ptdata.set_index(['TrafficType', 'Year', 'iso_week_number'])
 
     weekly_developments = pd.concat([weekly_bp, weekly_miv, ptdata], ignore_index=False)
@@ -176,22 +189,28 @@ def calendarweeks(bpdata, mivdata, ptdata):
     )
     weekly_developments.to_csv('data/weekly_totals_traffictype.csv')
     total_weekly_traffic.to_csv('data/weekly_total_traffic.csv')
+    # remove number of observations
+    weekly_developments = weekly_developments.drop(columns='n_observations')
 
     weekly_miv = weekly_miv.reset_index()
     weekly_bp = weekly_bp.reset_index()
     ptdata = mivdata.reset_index()
+    weekly_developments = weekly_developments.drop(columns=['Day', 'Month'])
     weekly_upload = weekly_developments.unstack(level=0)
     weekly_upload = weekly_upload.reset_index()
     weekly_upload = weekly_upload.iloc[:, :6]
     weekly_upload = weekly_upload.loc[weekly_upload['Year'] == 2020]
     weekly_upload = weekly_upload.loc[weekly_upload['iso_week_number'] > 6]
     weekly_upload.columns = weekly_upload.columns.to_flat_index()
-    weekly_upload.columns = ['Year', 'Wochennummer', 'Fussgänger', 'MIV', 'Tram', 'Velo']
-    weekly_upload = weekly_upload.drop(columns='Year')
-    weekly_upload = weekly_upload[['Wochennummer', 'MIV', 'Tram', 'Velo', 'Fussgängerd']]
+    weekly_upload.columns = ['Year', 'Wochennummer', 'BVB', 'Fussgänger', 'MIV', 'Velo']
+    weekly_upload = weekly_upload.drop(columns=['Year'])
+    weekly_upload = weekly_upload[['Wochennummer', 'MIV', 'BVB', 'Velo', 'Fussgänger']]
     weekly_upload.to_csv('data/weekly_totals_traffictype_upload.csv', index=False)
-    print('done')
-
+    print('Tabelle für Upload gespeichert')
+    dk.updatedwchart(id='Uy7qm', data=weekly_upload,
+                     updatedate='Kalenderwoche ' + str(max(weekly_upload['Wochennummer'])), folder=31844,
+                     title='Verkehrsmessungen Basel-Stadt')
+    print('Tabelle hochgeladen')
 
 def uploadaverages(site, thisdata, newdata, filestring, namestring, folder, chartadminfn, updatedate, filename,
                    stationstring, coordinates=0):
@@ -274,7 +293,7 @@ def test_monthly():
 def test_rolling_avg():
     data = pd.read_csv('data/dailiesnew.csv')
     data2 = pd.read_csv('data/dailies_MIV.csv')
-    # rollingavgWD(data)
+    rollingavgWD(data)
     rollingavgWD(data=data2, chartadminfn='MIV_rollingavg_3m_chartadmin.csv', folder=33162)
     print('Abgeschlossen')
 

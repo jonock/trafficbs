@@ -51,14 +51,15 @@ def updatemetadata(id, filename):
 
 
 def updatedwchart(id, data, title, updatedate='-upsi, schick Jonathan eine Mail-', folder=31844):
-    data.to_csv('dataupload.csv', encoding='utf8')
-    data = data.to_csv(encoding='utf8')
+    data.to_csv('dataupload.csv', encoding='utf8', index=False)
+    data = data.to_csv(index=False, encoding='utf-8')
+
     url = f'https://api.datawrapper.de/v3/charts/{id}/data'
     headers = {
         'authorization': f'Bearer {dwToken}',
-        'content-type': 'text/csv'
+        'content-type': 'text/csv; charset=utf8'
     }
-    dataupdate = ((requests.put(url=url, headers=headers, data=data)))
+    dataupdate = ((requests.put(url=url, headers=headers, data=data.encode('utf-8'))))
 
     # Beschreibung Updaten
     url = f'https://api.datawrapper.de/v3/charts/{id}'
@@ -77,7 +78,7 @@ def updatedwchart(id, data, title, updatedate='-upsi, schick Jonathan eine Mail-
         'folderId': f'{folder}'
     }
     #    payload = json.dumps(payload)
-    description = ((requests.patch(url=url, headers=headers, json=payload)))
+    description = requests.patch(url=url, headers=headers, json=payload)
     url = f'https://api.datawrapper.de/charts/{id}/publish'
     payload = ({'json': True})
     publish = (requests.post(url=url, headers=headers, json=payload))
