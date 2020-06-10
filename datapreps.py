@@ -72,13 +72,16 @@ def monthlyaverages(data):
 
 def csvpoll(bsid, filename):
     url = f'https://data.bs.ch/explore/dataset/{bsid}/download/?format=csv&timezone=Europe/Berlin&lang=de&use_labels_for_header=true&csv_separator=%3B'
+    print('Start Download des Datensatzes ' + str(bsid))
     r = requests.get(url, allow_redirects=True)
+    print('Download fertig, File schreiben')
     open(filename, 'wb').write(r.content)
     print('Datei ' + filename + ' gespeichert')
 
 
 csvpoll(bsid=100006, filename='data/MIV_newpoll.csv')
 csvpoll(bsid=100013, filename='data/bp_newpoll.csv')
+csvpoll(bsid=100075, filename='data/pt_newpoll.csv')
 
 mivtotals = loaddata(filename='data/MIV_newpoll.csv', histfilename='data/200531_MIVhist.csv',
                      savename='data/dailies_MIV.csv', histdata=True)
