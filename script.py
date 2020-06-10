@@ -6,13 +6,14 @@ import pandas as pd
 import requests
 
 import processing as pc
+import test_weekly_data
 
 now = datetime.now()
 
 
-def dailyupdate():
+def dailyupdate(legacyfile='data/dailiesnew.csv', dataset_id=100013):
     # import existing dataset
-    legacy = pd.read_csv('data/dailiesnew.csv')
+    legacy = pd.read_csv(legacyfile)
     legacy = legacy.loc[legacy['Year'] > 2017]
     legacydate = []
     for date in legacy.iterrows():
@@ -21,7 +22,7 @@ def dailyupdate():
     datecode = datetime.strftime(maxtime, '%Y-%m-%dT%h%m')
     print(datecode)
     # 2020-05-07T23%3A00%3A00%2B00.00
-    data = gatherBS(100013)
+    data = gatherBS(dataset_id)
     dataagg = pd.DataFrame()
     for entry in data:
         dataagg = dataagg.append(entry['fields'], ignore_index=True)
@@ -31,7 +32,7 @@ def dailyupdate():
     datasums = sumdata(dataagg)
     aggregate = pd.concat([legacy, datasums], ignore_index=True)
     aggregate.drop_duplicates(subset=['SiteCode', 'Date', 'Total', 'TrafficType'])
-    aggregate.to_csv('data/dailiesnew.csv')
+    aggregate.to_csv(legacyfile)
     print('csv gespeichert ab ' + str(datecode[:10]) + ' neue Einträge ' + str(len(datasums)))
     return dataagg
 
@@ -124,10 +125,13 @@ def writeCSVcont(data, filename):
     file.close()
     return filename
 
-#data = gatherBS(100013)
-#writeCSVinit(data, 'rawdata_now.csv')
-#recent = writeCSVcont(data, 'trafficdata.csv')
-#addData(data,'evchargers.csv', recent)
-#print('Neue Tabelle geschrieben: ' + recent)
+
+# data = gatherBS(100013)
+# writeCSVinit(data, 'rawdata_now.csv')
+# recent = writeCSVcont(data, 'trafficdata.csv')
+# addData(data,'evchargers.csv', recent)
+# print('Neue Tabelle geschrieben: ' + recent)
 dailyupdate()
+dailyupdate('data/dailies_MIV.csv', dataset_id=100006)
 pc.test_rolling_avg()
+test_weekly_data.test_weekly_comparisons()

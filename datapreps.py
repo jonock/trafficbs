@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import requests
 
 
 def loaddata(histdata=False, histfilename='data/200510_download_hist.csv', filename='data/200515_download.csv',
@@ -69,7 +70,18 @@ def monthlyaverages(data):
     return (monthlyavg)
 
 
-# daytotals = loaddata(histdata=True)
-mivtotals = loaddata(filename='data/200531_MIVdownload.csv', histfilename='data/200531_MIVhist.csv',
+def csvpoll(bsid, filename):
+    url = f'https://data.bs.ch/explore/dataset/{bsid}/download/?format=csv&timezone=Europe/Berlin&lang=de&use_labels_for_header=true&csv_separator=%3B'
+    r = requests.get(url, allow_redirects=True)
+    open(filename, 'wb').write(r.content)
+    print('Datei ' + filename + ' gespeichert')
+
+
+csvpoll(bsid=100006, filename='data/MIV_newpoll.csv')
+csvpoll(bsid=100013, filename='data/bp_newpoll.csv')
+
+mivtotals = loaddata(filename='data/MIV_newpoll.csv', histfilename='data/200531_MIVhist.csv',
                      savename='data/dailies_MIV.csv', histdata=True)
+bptotals = loaddata(filename='data/bp_newpoll.csv', histfilename='data/200510_download_hist.csv',
+                    savename='bp_dailies.csv', histdata=True)
 # monthlyaverages(daytotals)

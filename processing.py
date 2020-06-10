@@ -166,10 +166,12 @@ def calendarweeks(bpdata, mivdata, ptdata):
 
     ptdata['Day'] = ptdata.apply(
         lambda x: int(str(x['Startdatum Woche'])[8:10]), axis=1)
-    # check for incomplete weeks before merging
 
-    incomplete = []
-    # incomplete = incomplete.append(weekly_bp.loc[weekly_bp['n_observations']<100])
+    weekly_bp_raw = weekly_bp.copy()
+    weekly_miv_raw = weekly_miv.copy()
+    # uncertain = weekly_bp.loc[(weekly_bp['n_observations'] < 100) & (weekly_bp[ > 6]])]['n_observations']
+    # uncertain0 = max(uncertain)
+    # uncertain1 = min(weekly_bp.loc[(weekly_bp['n_observations'] < 100) & (weekly_bp.index > 6)]['n_observations'])
     weekly_bp = weekly_bp.loc[weekly_bp['n_observations'] >= 100]
     weekly_miv = weekly_miv.loc[weekly_miv['n_observations'] >= 180]
 
@@ -179,6 +181,7 @@ def calendarweeks(bpdata, mivdata, ptdata):
     ptdata['TrafficType'] = 'BVB'
     ptdata = ptdata.set_index(['TrafficType', 'Year', 'iso_week_number'])
 
+    weekly_developments_raw = pd.concat([weekly_bp_raw, weekly_miv_raw, ptdata], ignore_index=False)
     weekly_developments = pd.concat([weekly_bp, weekly_miv, ptdata], ignore_index=False)
     total_weekly_traffic = weekly_developments.groupby(['Year', 'iso_week_number']).agg(
         {
@@ -187,6 +190,7 @@ def calendarweeks(bpdata, mivdata, ptdata):
             'Day': 'first'
         }
     )
+    weekly_developments_raw.to_csv('data/weekly_totals_traffictype_raw.csv')
     weekly_developments.to_csv('data/weekly_totals_traffictype.csv')
     total_weekly_traffic.to_csv('data/weekly_total_traffic.csv')
     # remove number of observations
@@ -303,16 +307,8 @@ def test_daily_avg():
     normalavgWD(data)
     print('Abgeschlossen')
 
-
-def test_weekly_comparisons():
-    bpdata = pd.read_csv('data/dailiesnew.csv')
-    mivdata = pd.read_csv('data/dailies_MIV.csv')
-    ptdata = pd.read_csv('data/pt_data.csv', delimiter=';')
-    calendarweeks(bpdata, mivdata, ptdata)
-
-
-test_rolling_avg()
-test_weekly_comparisons()
+# test_rolling_avg()
+# test_weekly_comparisons()
 # test_rolling_avg()
 # test_monthly()
 #BVB datensatz https://data.bs.ch/explore/dataset/100075/download/?format=csv&timezone=Europe/Berlin&lang=de&use_labels_for_header=true&csv_separator=%3B
