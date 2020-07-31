@@ -22,7 +22,7 @@ def loaddata(histdata=False, histfilename='data/200510_download_hist.csv', filen
             'Geo Point': 'first'
         }
     )
-    print('nix')
+    print(savename + ' abgelegt')
     if histdata:
         groupshist = datahist.groupby(['SiteCode', 'Date']).agg(
             {
@@ -86,5 +86,5 @@ csvpoll(bsid=100075, filename='data/pt_newpoll.csv')
 mivtotals = loaddata(filename='data/MIV_newpoll.csv', histfilename='data/200531_MIVhist.csv',
                      savename='data/dailies_MIV.csv', histdata=True)
 bptotals = loaddata(filename='data/bp_newpoll.csv', histfilename='data/200510_download_hist.csv',
-                    savename='bp_dailies.csv', histdata=True)
+                    savename='data/dailiesnew.csv', histdata=True)
 # monthlyaverages(daytotals)

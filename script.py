@@ -1,9 +1,8 @@
 import csv
 import json
-from datetime import datetime
-
 import pandas as pd
 import requests
+from datetime import datetime
 
 import processing as pc
 import test_weekly_data
@@ -131,7 +130,7 @@ def writeCSVcont(data, filename):
 # recent = writeCSVcont(data, 'trafficdata.csv')
 # addData(data,'evchargers.csv', recent)
 # print('Neue Tabelle geschrieben: ' + recent)
-dailyupdate()
-dailyupdate('data/dailies_MIV.csv', dataset_id=100006)
+# dailyupdate()
+# dailyupdate('data/dailies_MIV.csv', dataset_id=100006)
 pc.test_rolling_avg()
 test_weekly_data.test_weekly_comparisons()
