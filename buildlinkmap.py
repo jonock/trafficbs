@@ -2,8 +2,6 @@ import pandas as pd
 
 import datakicker as dk
 
-# import LatLon
-
 data = dk.getChartData('ZOd9a')
 data2 = dk.getChartData('BBxPZ')
 
@@ -50,6 +48,6 @@ def addMarkers(data, filename, dwid='ZOd9a'):
     dk.updateMarkers(dwid, data)
 
 
-addMarkers(data, 'rollingavg_3m_chartadmin.csv')
-addMarkers(data2, 'MIV_rollingavg_3m_chartadmin.csv', dwid='BBxPZ')
+addMarkers(data, 'chartadmin/rollingavg_3m_chartadmin.csv')
+addMarkers(data2, 'chartadmin/MIV_rollingavg_3m_chartadmin.csv', dwid='BBxPZ')
 print('Linkmap gebaut')

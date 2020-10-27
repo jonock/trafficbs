@@ -125,5 +125,5 @@ def getChartData(id):
     }
     metadataJson = requests.get(url=f'https://api.datawrapper.de/v3/charts/{id}/data', headers=headers)
     metadataDict = metadataJson.json()
-    return (metadataDict)
     print('Metadaten erhalten')
+    return (metadataDict)

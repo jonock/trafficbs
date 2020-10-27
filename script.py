@@ -1,8 +1,9 @@
 import csv
 import json
+from datetime import datetime
+
 import pandas as pd
 import requests
-from datetime import datetime
 
 import processing as pc
 import test_weekly_data
@@ -62,7 +63,6 @@ def sumdata(data):
          'Geo Point']]
     return groups
 
-
 def gatherBS(id):
     response = requests.get(
         f'https://data.bs.ch/api/records/1.0/search/?dataset={id}&q=&rows=5000&sort=datetimefrom'
@@ -88,9 +88,6 @@ def addData(data,filename,recent):
     fileread.close()
     recentdata.close()
 
-
-
-
 def writeCSVinit(data, filename):
     file = open(f'data/{filename}', 'w')
     csvwriter = csv.writer(file)
@@ -103,7 +100,6 @@ def writeCSVinit(data, filename):
         csvwriter.writerow(i['fields'].values())
     file.close()
     print('CSV ' + filename + ' geschrieben')
-
 
 def addTimestamp(filename):
     add = now.strftime("%y%m%d_%H%M%S")
@@ -123,7 +119,6 @@ def writeCSVcont(data, filename):
         csvwriter.writerow(i.values())
     file.close()
     return filename
-
 
 # data = gatherBS(100013)
 # writeCSVinit(data, 'rawdata_now.csv')

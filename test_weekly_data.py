@@ -9,5 +9,4 @@ def test_weekly_comparisons():
     ptdata = pd.read_csv('data/pt_newpoll.csv', delimiter=';')
     processing.calendarweeks(bpdata, mivdata, ptdata)
 
-
 test_weekly_comparisons()
