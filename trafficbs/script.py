@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 import requests
 
-import test_weekly_data
+from tests import test_weekly_data
 from trafficbs import buildlinkmap
 from trafficbs import datakicker
 from trafficbs import datapreps
@@ -133,9 +133,9 @@ def writeCSVcont(data, filename):
 # dailyupdate('data/dailies_MIV.csv', dataset_id=100006)
 
 # neue Datensätze laden (komplett)
-# datapreps.csvpoll(bsid=100006, filename='../data/MIV_newpoll.csv')
-# datapreps.csvpoll(bsid=100013, filename='../data/bp_newpoll.csv')
-# datapreps.csvpoll(bsid=100075, filename='../data/pt_newpoll.csv')
+datapreps.csvpoll(bsid=100006, filename='../data/MIV_newpoll.csv')
+datapreps.csvpoll(bsid=100013, filename='../data/bp_newpoll.csv')
+datapreps.csvpoll(bsid=100075, filename='../data/pt_newpoll.csv')
 
 mivtotals = datapreps.loaddata(filename='../data/MIV_newpoll.csv', histfilename='../data/200531_MIVhist.csv',
                                savename='../data/dailies_MIV.csv', histdata=True)
