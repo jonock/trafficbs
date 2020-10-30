@@ -1,9 +1,6 @@
 import pandas as pd
 
-import datakicker as dk
-
-data = dk.getChartData('ZOd9a')
-data2 = dk.getChartData('BBxPZ')
+from trafficbs import datakicker
 
 
 def addMarkers(data, filename, dwid='ZOd9a'):
@@ -45,9 +42,9 @@ def addMarkers(data, filename, dwid='ZOd9a'):
             markers.append(thismarker)
             print(thismarker)
     data['markers'] = markers
-    dk.updateMarkers(dwid, data)
+    datakicker.updateMarkers(dwid, data)
+    print('Neue Linkmap gebaut')
 
-
-addMarkers(data, 'chartadmin/rollingavg_3m_chartadmin.csv')
-addMarkers(data2, 'chartadmin/MIV_rollingavg_3m_chartadmin.csv', dwid='BBxPZ')
-print('Linkmap gebaut')
+# addMarkers(data, '../chartadmin/rollingavg_3m_chartadmin.csv')
+# addMarkers(data2, '../chartadmin/MIV_rollingavg_3m_chartadmin.csv', dwid='BBxPZ')
+# print('Linkmap gebaut')

@@ -5,8 +5,11 @@ from datetime import datetime
 import pandas as pd
 import requests
 
-import processing as pc
 import test_weekly_data
+from trafficbs import buildlinkmap
+from trafficbs import datakicker
+from trafficbs import datapreps
+from trafficbs import processing
 
 now = datetime.now()
 
@@ -120,6 +123,7 @@ def writeCSVcont(data, filename):
     file.close()
     return filename
 
+
 # data = gatherBS(100013)
 # writeCSVinit(data, 'rawdata_now.csv')
 # recent = writeCSVcont(data, 'trafficdata.csv')
@@ -127,5 +131,23 @@ def writeCSVcont(data, filename):
 # print('Neue Tabelle geschrieben: ' + recent)
 # dailyupdate()
 # dailyupdate('data/dailies_MIV.csv', dataset_id=100006)
-pc.test_rolling_avg()
+
+# neue Datensätze laden (komplett)
+# datapreps.csvpoll(bsid=100006, filename='../data/MIV_newpoll.csv')
+# datapreps.csvpoll(bsid=100013, filename='../data/bp_newpoll.csv')
+# datapreps.csvpoll(bsid=100075, filename='../data/pt_newpoll.csv')
+
+mivtotals = datapreps.loaddata(filename='../data/MIV_newpoll.csv', histfilename='../data/200531_MIVhist.csv',
+                               savename='../data/dailies_MIV.csv', histdata=True)
+bptotals = datapreps.loaddata(filename='../data/bp_newpoll.csv', histfilename='../data/200510_download_hist.csv',
+                              savename='../data/dailiesnew.csv', histdata=True)
+
+# Berechnungen einzelne Stationen
+processing.test_rolling_avg()
+# Wochenvergleiche generieren
 test_weekly_data.test_weekly_comparisons()
+# Linkmap Velo bauen
+buildlinkmap.addMarkers(datakicker.getChartData('ZOd9a'), '../chartadmin/rollingavg_3m_chartadmin.csv', dwid='Z0d9a')
+# Linkmap MIV bauen
+buildlinkmap.addMarkers(datakicker.getChartData('BBxPZ'), '../chartadmin/MIV_rollingavg_3m_chartadmin.csv',
+                        dwid='BBxPZ')
