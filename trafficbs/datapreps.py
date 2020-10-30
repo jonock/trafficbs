@@ -3,8 +3,8 @@ import pandas as pd
 import requests
 
 
-def loaddata(histdata=False, histfilename='data/200510_download_hist.csv', filename='data/200515_download.csv',
-             savename='data/dailytotals.csv'):
+def loaddata(histdata=False, histfilename='../data/200510_download_hist.csv', filename='../data/200515_download.csv',
+             savename='../data/dailytotals.csv'):
     if histdata:
         datahist = pd.read_csv(f'{histfilename}', sep=';')
         datahist = datahist.loc[(datahist['Year'] > 2016) & (datahist['Year'] < 2019)]
@@ -78,13 +78,4 @@ def csvpoll(bsid, filename):
     open(filename, 'wb').write(r.content)
     print('Datei ' + filename + ' gespeichert')
 
-
-csvpoll(bsid=100006, filename='data/MIV_newpoll.csv')
-csvpoll(bsid=100013, filename='data/bp_newpoll.csv')
-csvpoll(bsid=100075, filename='data/pt_newpoll.csv')
-
-mivtotals = loaddata(filename='data/MIV_newpoll.csv', histfilename='data/200531_MIVhist.csv',
-                     savename='data/dailies_MIV.csv', histdata=True)
-bptotals = loaddata(filename='data/bp_newpoll.csv', histfilename='data/200510_download_hist.csv',
-                    savename='data/dailiesnew.csv', histdata=True)
 # monthlyaverages(daytotals)

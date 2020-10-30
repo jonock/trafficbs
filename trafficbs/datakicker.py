@@ -2,7 +2,7 @@ import json
 
 import requests
 
-from credentials import dwToken
+from trafficbs.credentials import dwToken
 
 
 # DataWrapper API Connection
@@ -115,7 +115,7 @@ def getFolders():
 
 def metaDatatemp(id):
     metadata, metadataJson = getChartMetadata(id)
-    with open('metaconfigs/temp.json', 'w') as writefile:
+    with open('../metaconfigs/temp.json', 'w') as writefile:
         json.dump(metadata, writefile)
 
 

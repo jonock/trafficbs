@@ -5,7 +5,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-import datakicker as dk
+from trafficbs import datakicker as dk
 
 
 def normalavgWD(data):
@@ -53,18 +53,19 @@ def normalavgWD(data):
         else:
             namestring = 'Anzahl ' + thisdata['TrafficType'].iloc[0] + ' bei ' + thisdata['SiteName'].iloc[0][4:]
         folder = 32224
-        filename = 'metaconfigs/normalcorona.json'
-        chartadminfn = 'normalavg_chartadmin.csv'
+        filename = '../metaconfigs/normalcorona.json'
+        chartadminfn = '../chartadmin/normalavg_chartadmin.csv'
         updatedate = str(max(thisdata['date']))
         uploadaverages(site, thisdata, newdata, filestring, namestring, folder, chartadminfn, updatedate, filename)
         coronatime = newdata.loc[(newdata['counter'] > 40) & (newdata['counter'] < sum(~np.isnan(newdata['2020'])))]
         folder = 32225
         chartadminfn = 'normalavg_3m_chartadmin.csv'
         coronatime = coronatime.drop(columns=['counter'])
-        filename = 'metaconfigs/normalcorona.json'
+        filename = '../metaconfigs/normalcorona.json'
         uploadaverages(site, thisdata, coronatime, filestring, namestring, folder, chartadminfn, updatedate, filename)
 
-def rollingavgWD(data, chartadminfn='chartadmin/rollingavg_3m_chartadmin.csv', folder=31911):
+
+def rollingavgWD(data, chartadminfn='../chartadmin/rollingavg_3m_chartadmin.csv', folder=31911):
     for site in data['SiteCode'].unique():
         thisdata = data.loc[data['SiteCode'] == site].copy()
         thisdata['Month'] = thisdata['Month'].astype(int)
@@ -117,7 +118,7 @@ def rollingavgWD(data, chartadminfn='chartadmin/rollingavg_3m_chartadmin.csv', f
         updatedate = str(max(thisdata['date']))
         coronatime = newdata.loc[(newdata['counter'] > 40) & (newdata['counter'] < sum(~np.isnan(newdata['2020'])))]
         coronatime = coronatime.drop(columns=['counter'])
-        filename = 'metaconfigs/rollingcorona.json'
+        filename = '../metaconfigs/rollingcorona.json'
         uploadaverages(site, thisdata, coronatime, filestring, namestring, folder, chartadminfn, updatedate, filename,
                        stationstring, coordinates)
 
@@ -190,9 +191,9 @@ def calendarweeks(bpdata, mivdata, ptdata):
             'Day': 'first'
         }
     )
-    weekly_developments_raw.to_csv('data/weekly_totals_traffictype_raw.csv')
-    weekly_developments.to_csv('data/weekly_totals_traffictype.csv')
-    total_weekly_traffic.to_csv('data/weekly_total_traffic.csv')
+    weekly_developments_raw.to_csv('../data/weekly_totals_traffictype_raw.csv')
+    weekly_developments.to_csv('../data/weekly_totals_traffictype.csv')
+    total_weekly_traffic.to_csv('../data/weekly_total_traffic.csv')
     # remove number of observations
     weekly_developments = weekly_developments.drop(columns='n_observations')
 
@@ -210,32 +211,32 @@ def calendarweeks(bpdata, mivdata, ptdata):
     weekly_upload = weekly_upload.loc[weekly_upload['Wochennummer'] > 6]
     weekly_upload = weekly_upload.drop(columns=['Year'])
     weekly_upload = weekly_upload[['Wochennummer', 'MIV', 'BVB', 'Velo', 'Fussgänger']]
-    weekly_upload.to_csv('data/weekly_totals_traffictype_upload.csv', index=False)
+    weekly_upload.to_csv('../data/weekly_totals_traffictype_upload.csv', index=False)
     print('Tabelle für Upload gespeichert')
     dk.updatedwchart(id='Uy7qm', data=weekly_upload,
                      updatedate='Kalenderwoche ' + str(max(weekly_upload['Wochennummer'])), folder=31844,
                      title='Verkehrsmessungen Basel-Stadt')
     print('Tabelle hochgeladen')
+
+    # Anpassung Wochennummer für Datawrapper
     weekly_backup['Wochennummer'] = weekly_backup['Year'].astype(str) + 'W' + weekly_backup['Wochennummer'].astype(str)
     weekly_velo = weekly_backup[['Year', 'Wochennummer', 'Velo']]
     weekly_velo_2020 = weekly_velo.loc[weekly_velo['Year'] == 2018].drop(columns=['Year'])
-    weekly_velo_2020.join((weekly_velo.loc[weekly_velo['Year'] == 2019]['Velo']), how='outer')
-    weekly_velo_2020['2018'] = weekly_velo.loc[weekly_velo['Year'] == 2020]['Velo']
 
-    weekly_velo_2020 = pd.concat([weekly_velo_2020, (weekly_velo.loc[weekly_velo['Year'] == 2020]['Velo'])], axis=1,
-                                 sort=False)
+    # Upload Velodate
     dk.updatedwchart(id='ve91z', data=weekly_velo_2020, title='Veloverkehr Basel-Stadt 2020',
                      updatedate='Kalenderwoche ' + str(max(weekly_upload['Wochennummer'])), folder=31844)
     dk.updatedwchart(id='ZxeOW', data=weekly_velo, title='Veloverkehr 2017 - 2020',
                      updatedate='Kalenderwoche ' + str(max(weekly_upload['Wochennummer'])), folder=31844)
-    weekly_velo.to_csv('data/weekly_velo.csv, index=False')
+    weekly_velo.to_csv('../data/weekly_velo.csv, index=False')
     print('Velo Fertig')
 
+    #Upload MIV daten
     weekly_miv = weekly_backup[['Year', 'Wochennummer', 'MIV']]
     weekly_miv_2020 = weekly_miv.loc[weekly_velo['Year'] == 2020].drop(columns=['Year'])
     dk.updatedwchart(id='Qas0c', data=weekly_miv_2020, title='MIV in Basel-Stadt 2020',
                      updatedate='Kalenderwoche ' + str(max(weekly_upload['Wochennummer'])), folder=31844)
-    weekly_velo.to_csv('data/weekly_velo.csv, index=False')
+    weekly_velo.to_csv('../data/weekly_velo.csv, index=False')
     print('MIV Fertig')
 
 def uploadaverages(site, thisdata, newdata, filestring, namestring, folder, chartadminfn, updatedate, filename,
@@ -274,7 +275,7 @@ def uploadaverages(site, thisdata, newdata, filestring, namestring, folder, char
             charts = charts.append(app, ignore_index=True)
             print(title + f' neu erstellt {id} und in chartadmin eingetragen')
             charts.to_csv(f'{chartadminfn}', index=False)
-        newdata.to_csv(f'data/stations/corona_{filestring}.csv')
+        newdata.to_csv(f'../data/stations/corona_{filestring}.csv')
     else:
         sys.exit(f'No chartadmin file found - check if {chartadminfn} exists')
 
@@ -282,16 +283,17 @@ def monthlyaverages(data):
     for site in data['SiteCode'].unique():
         thisdata = data.loc[data['SiteCode'] == site].copy()
         thisdata.sort_values(by=['Year', 'Month'])
-        filestring = thisdata['TrafficType'].iloc[0] + '_' + thisdata['SiteName'].iloc[0].replace(' ', '').replace('/','')
+        filestring = thisdata['TrafficType'].iloc[0] + '_' + thisdata['SiteName'].iloc[0].replace(' ', '').replace('/',
+                                                                                                                   '')
         namestring = thisdata['TrafficType'].iloc[0] + ' - ' + thisdata['SiteName'].iloc[0][4:]
-        filename = 'metaconfigs/dailies.json'
-        if os.path.exists('monthly_chartadmin.csv'):
-            charts = pd.read_csv('monthly_chartadmin.csv', index_col= False)
+        filename = '../metaconfigs/dailies.json'
+        if os.path.exists('../chartadmin/monthly_chartadmin.csv'):
+            charts = pd.read_csv('../chartadmin/monthly_chartadmin.csv', index_col=False)
             if site in charts['SiteCode'].unique():
-                thischart = charts.loc[charts['SiteCode']==site].copy()
+                thischart = charts.loc[charts['SiteCode'] == site].copy()
                 id = thischart['dwid'].iloc[0]
                 updatedate = str(max(thisdata['Date']))
-                jsondata = dk.updatedwchart(id,thisdata,title = namestring,updatedate=updatedate)
+                jsondata = dk.updatedwchart(id, thisdata, title=namestring, updatedate=updatedate)
                 dk.updatemetadata(id, filename)
                 print(thischart['title'].iloc[0] + ' update erfolgreich')
             else:
@@ -308,21 +310,22 @@ def monthlyaverages(data):
         else:
             sys.exit('No chartadmin file found - check if monthly_chartadmin.csv exists')
 
-        thisdata.to_csv(f'data/stations/{filestring}.csv')
+        thisdata.to_csv(f'../data/stations/{filestring}.csv')
 
 def test_monthly():
-    data = pd.read_csv('data/monthlyavg.csv')
+    data = pd.read_csv('../data/monthlyavg.csv')
     monthlyaverages(data)
 
+
 def test_rolling_avg():
-    data = pd.read_csv('data/dailiesnew.csv')
-    data2 = pd.read_csv('data/dailies_MIV.csv')
+    data = pd.read_csv('../data/dailiesnew.csv')
+    data2 = pd.read_csv('../data/dailies_MIV.csv')
     rollingavgWD(data)
-    rollingavgWD(data=data2, chartadminfn='chartadmin/MIV_rollingavg_3m_chartadmin.csv', folder=43121)
+    rollingavgWD(data=data2, chartadminfn='../chartadmin/MIV_rollingavg_3m_chartadmin.csv', folder=43121)
     print('Abgeschlossen')
 
 def test_daily_avg():
-    data = pd.read_csv('data/dailiesnew.csv')
+    data = pd.read_csv('../data/dailiesnew.csv')
     normalavgWD(data)
     print('Abgeschlossen')
 
