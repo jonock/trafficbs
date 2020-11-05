@@ -151,3 +151,4 @@ buildlinkmap.addMarkers(datakicker.getChartData('ZOd9a'), '../chartadmin/rolling
 # Linkmap MIV bauen
 buildlinkmap.addMarkers(datakicker.getChartData('BBxPZ'), '../chartadmin/MIV_rollingavg_3m_chartadmin.csv',
                         dwid='BBxPZ')
+print('Skript ist bis zum Ende durchgelaufen')
